@@ -16,7 +16,7 @@ class _HomeState extends State<Home> {
   String _complemento = "";
   String _localidade = "";
   String _uf = "";
-
+  String _mensagemUsuario = "";
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,7 @@ class _HomeState extends State<Home> {
               ),
             ),
             RaisedButton(
-              child: Text("Consultar API"),
+              child: Text("Consultar CEP"),
               color: Colors.blue,
               textColor: Colors.white,
               onPressed: _recuperarCep,
@@ -97,7 +97,7 @@ class _HomeState extends State<Home> {
                     )
                   ),
                   Padding(
-                    padding: EdgeInsets.only(bottom: 16),
+                    padding: EdgeInsets.only(bottom: 32),
                     child: Row(
                       children: <Widget>[
                         Text("Logradouro: ", style: TextStyle(
@@ -107,6 +107,12 @@ class _HomeState extends State<Home> {
                       ],
                     )
                   ),
+                  Text(_mensagemUsuario,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold
+                  ),)
 
                 ],
               ),
@@ -125,14 +131,27 @@ class _HomeState extends State<Home> {
     http.Response response;
     response = await http.get(urlRequisicao.replaceAll("__CEP__", cep));
 
-
+    if(!response.body.contains("erro")){
       Map<String, dynamic> retorno = jsonDecode(response.body);
       _uf = retorno["uf"];
       _localidade = retorno["localidade"];
       _bairro = retorno["bairro"];
       _complemento = retorno["complemento"];
       _logradouro = retorno["logradouro"];
-      setState(() {});
+      _mensagemUsuario = "";
+    }
+    else{
+      _mensagemUsuario = "O cep não foi encontrado ou ocorreu um erro durante a busca";
+      _uf = "";
+      _localidade = "";
+      _bairro = "";
+      _complemento = "";
+      _logradouro = "";
+      }
+
+
+    setState(() {});
+
 
   }
 }
